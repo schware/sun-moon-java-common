@@ -9,7 +9,7 @@ Spring 서비스가 둘 다 가져다 쓰기 때문입니다. (Device Server 의
 
 | 모듈 | 좌표 | 무엇 |
 |---|---|---|
-| `reprocess/` | `com.sunmoon:sun-moon-reprocess:0.1.0` | 실패 재처리의 틀 — `FailedItem` · `Reprocessor` · `ReprocessService` · `ReprocessViews`(HTTP 응답 모양) |
+| `reprocess/` | `com.sunmoon:sun-moon-reprocess:0.2.0` | 실패 재처리의 틀 — `FailedItem` · `Reprocessor` · `ReprocessService` · `ReprocessViews`(HTTP 응답 모양). 0.2.0: `retryable` (찾아내기만 하는 종류) |
 
 ## 원칙 — 틀은 같이, 처리는 각자
 
@@ -31,7 +31,7 @@ includeBuild("java-common")
 
 // build.gradle.kts
 dependencies {
-    implementation("com.sunmoon:sun-moon-reprocess:0.1.0")
+    implementation("com.sunmoon:sun-moon-reprocess:0.2.0")
 }
 ```
 

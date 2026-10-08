@@ -47,6 +47,10 @@ public final class ReprocessService {
     public Reprocessor.Outcome retry(String kind, String storeId, String id) {
         return of(kind)
                 .map(reprocessor -> {
+                    if (!reprocessor.retryable()) {
+                        return new Reprocessor.Outcome(false, false,
+                                reprocessor.label() + " 은 찾아낸 목록입니다 — 원래 자리에서 처리하면 사라집니다");
+                    }
                     Reprocessor.Outcome outcome = reprocessor.retry(storeId, id);
                     log.info("재처리 {} {}/{} — {}", reprocessor.label(), storeId, id, outcome.message());
                     return outcome;
@@ -63,7 +67,7 @@ public final class ReprocessService {
      */
     public Retried retryAll(String kind, String storeId) {
         Optional<Reprocessor> reprocessor = of(kind);
-        if (reprocessor.isEmpty()) {
+        if (reprocessor.isEmpty() || !reprocessor.get().retryable()) {
             return new Retried(0, 0);
         }
         int ok = 0;

@@ -46,6 +46,29 @@ class ReprocessViewsTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
+    void everyKindSaysWhetherItCanBeRetried() {
+        Reprocessor findOnly = new Reprocessor() {
+            @Override public String kind() { return "ORDER_DUPLICATE"; }
+            @Override public String label() { return "중복 주문"; }
+            @Override public List<FailedItem> failed(String storeId) { return List.of(); }
+            @Override public Outcome retry(String storeId, String id) { throw new AssertionError("부르면 안 됨"); }
+            @Override public boolean retryable() { return false; }
+        };
+        ReprocessService service = new ReprocessService(List.of(kind("SALE", "매출 분해", List.of()), findOnly));
+
+        List<Map<String, Object>> kinds = (List<Map<String, Object>>) ReprocessViews.list(service, null).get("kinds");
+
+        assertEquals(List.of("kind", "label", "retryable", "count", "items"), List.copyOf(kinds.get(0).keySet()));
+        assertEquals(true, kinds.get(0).get("retryable"));
+        assertEquals(false, kinds.get(1).get("retryable"));
+
+        Reprocessor.Outcome outcome = service.retry("ORDER_DUPLICATE", null, "7");
+        assertEquals(false, outcome.accepted(), "찾아내기만 하는 종류는 retry 를 부르지 않습니다");
+        assertEquals(new ReprocessService.Retried(0, 0), service.retryAll("ORDER_DUPLICATE", null));
+    }
+
+    @Test
     void listWithoutStoreSaysEmptyStore() {
         assertEquals("", ReprocessViews.list(new ReprocessService(List.of()), null).get("storeId"));
     }

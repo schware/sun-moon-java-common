@@ -13,7 +13,7 @@ import java.util.Map;
  * (Netty 의 RestEndpoint, Spring 의 @RestController)는 이 {@link Map} 을 JSON 으로 내보내기만 합니다.
  *
  * <table>
- *   <tr><td>{@code GET  /reprocess?storeId=}</td><td>{@link #list} — {@code {storeId, total, kinds:[{kind, label, count, items:[…]}]}}</td></tr>
+ *   <tr><td>{@code GET  /reprocess?storeId=}</td><td>{@link #list} — {@code {storeId, total, kinds:[{kind, label, retryable, count, items:[…]}]}}</td></tr>
  *   <tr><td>{@code POST /reprocess/one?kind=&id=&storeId=}</td><td>{@link #one} — {@code {kind, id, accepted, done, message}}</td></tr>
  *   <tr><td>{@code POST /reprocess/all?kind=&storeId=}</td><td>{@link #all} — {@code {kind, queued, failed}}</td></tr>
  * </table>
@@ -52,6 +52,8 @@ public final class ReprocessViews {
             Map<String, Object> kind = new LinkedHashMap<>();
             kind.put("kind", reprocessor.kind());
             kind.put("label", reprocessor.label());
+            // 거짓이면 화면이 "다시" 를 숨깁니다 — 찾아내기만 하는 종류 (0.2.0).
+            kind.put("retryable", reprocessor.retryable());
             kind.put("count", items.size());
             kind.put("items", rows);
             kinds.add(kind);

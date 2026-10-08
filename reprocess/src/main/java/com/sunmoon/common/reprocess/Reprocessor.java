@@ -46,6 +46,17 @@ public interface Reprocessor {
     Outcome retry(String storeId, String id);
 
     /**
+     * "다시" 를 할 수 있는 종류인가 (0.2.0).
+     *
+     * <p>실패를 되돌리는 종류와 달리 <b>찾아내기만 하는</b> 종류가 있습니다 — 중복 주문, 채널과의 불일치처럼
+     * 고치는 일이 원래 자리(POS, 환불 판단 …)에 있는 것들입니다. 거짓이면 화면이 "다시" 를 숨기고,
+     * {@link ReprocessService} 도 {@link #retry} 를 부르지 않습니다. 원래 자리에서 처리되면 목록에서 사라집니다.
+     */
+    default boolean retryable() {
+        return true;
+    }
+
+    /**
      * @param accepted 그 건이 있었고, 이제 다시 할 대상이 됐는가.
      * @param done     이 서버가 <b>지금</b> 다시 했는가. 거짓이면 대상으로
      *                 되돌려 놓았을 뿐이고, 실제 처리는 나중입니다.
